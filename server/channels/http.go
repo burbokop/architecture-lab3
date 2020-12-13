@@ -2,9 +2,11 @@ package channels
 
 import (
 	"encoding/json"
-	"github.com/burbokop/architecture-lab3/server/tools"
+	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/burbokop/architecture-lab3/server/tools"
 )
 
 // Channels HTTP handler.
@@ -13,6 +15,7 @@ type HttpHandlerFunc http.HandlerFunc
 // HttpHandler creates a new instance of channels HTTP handler.
 func HttpHandler(store *Store) HttpHandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
+		fmt.Println("responce:", r)
 		if r.Method == "GET" {
 			handleListChannels(store, rw)
 		} else if r.Method == "POST" {
