@@ -4,7 +4,7 @@ package main
 
 import (
 	"github.com/google/wire"
-	"github.com/roman-mazur/chat-channels-example/server/channels"
+	"github.com/burbokop/architecture-lab3/server/channels"
 )
 
 // ComposeApiServer will create an instance of CharApiServer according to providers defined in this file.

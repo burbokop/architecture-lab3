@@ -1,12 +1,10 @@
 const http = require('../common/http');
 
 const Client = (baseUrl) => {
-
     const client = http.Client(baseUrl);
-
     return {
-        listChannels: () => client.get('/channels'),
-        createChannel: (name) => client.post('/channels', { name })
+        listVirtualMashines: () => client.get('/vm_list'),
+        connectDisc: (diskId, vmId) => client.post('/connect_disc', { diskId, vmId })
     }
 
 };

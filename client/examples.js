@@ -1,31 +1,30 @@
 // This file contains examples of scenarios implementation using
-// the SDK for channels management.
 
-const channels = require('./channels/client');
+const channels = require('./interface/client');
 
 const client = channels.Client('http://localhost:8080');
 
-// Scenario 1: Display available channels.
-client.listChannels()
+// Scenario 1: Display available virtual mashines.
+client.listVirtualMashines()
     .then((list) => {
         console.log('=== Scenario 1 ===');
-        console.log('Available channels:');
-        list.forEach((c) => console.log(c.name));
+        console.log('Available virtual mashines:');
+        list.forEach((c) => console.log(c));
     })
     .catch((e) => {
-        console.log(`Problem listing available channels: ${e.message}`);
+        console.log(`Problem listing available virtual mashines: ${e.message}`);
     });
 
-// Scenario 2: Create new channel.
-client.createChannel('my-new-channel')
+// Scenario 2: Connect disc.
+client.connectDisc(0, 0)
     .then((resp) => {
         console.log('=== Scenario 2 ===');
-        console.log('Create channel response:', resp);
-        return client.listChannels()
-            .then((list) => list.map((c) => c.name).join(', '))
-            .then((str) => {
-                console.log(`Current channels: ${str}`);
-            })
+        console.log('Disc connection responce:', resp);
+        //return client.listChannels()
+        //    .then((list) => list.map((c) => c.name).join(', '))
+        //    .then((str) => {
+        //        console.log(`vm list: ${str}`);
+        //    })
     })
     .catch((e) => {
         console.log(`Problem creating a new channel: ${e.message}`);

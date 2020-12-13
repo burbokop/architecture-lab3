@@ -3,20 +3,22 @@ package main
 import (
 	"database/sql"
 	"flag"
-	"github.com/roman-mazur/chat-channels-example/server/db"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+
+	"github.com/burbokop/architecture-lab3/server/db"
 )
 
 var httpPortNumber = flag.Int("p", 8080, "HTTP port number")
 
 func NewDbConnection() (*sql.DB, error) {
 	conn := &db.Connection{
-		DbName:     "chat-example",
-		User:       "roman",
-		Host:       "localhost",
+		DbName:     "boris",
+		User:       "boris",
+		Password:   "boris",
+		Host:       "localhost:5433",
 		DisableSSL: true,
 	}
 	return conn.Open()

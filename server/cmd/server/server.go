@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/roman-mazur/chat-channels-example/server/channels"
+	"github.com/burbokop/architecture-lab3/server/channels"
 	"net/http"
 )
 

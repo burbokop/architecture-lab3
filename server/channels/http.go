@@ -2,7 +2,7 @@ package channels
 
 import (
 	"encoding/json"
-	"github.com/roman-mazur/chat-channels-example/server/tools"
+	"github.com/burbokop/architecture-lab3/server/tools"
 	"log"
 	"net/http"
 )
