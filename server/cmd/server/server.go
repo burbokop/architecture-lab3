@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/burbokop/architecture-lab3/server/channels"
 	"net/http"
+
+	"github.com/burbokop/architecture-lab3/server/channels"
 )
 
 type HttpPortNumber int
@@ -13,7 +14,8 @@ type HttpPortNumber int
 type ChatApiServer struct {
 	Port HttpPortNumber
 
-	ChannelsHandler channels.HttpHandlerFunc
+	ListVmsHandler        channels.HttpHandlerFunc
+	DiscConnectionHandler channels.HttpHandlerFunc
 
 	server *http.Server
 }
@@ -22,15 +24,19 @@ type ChatApiServer struct {
 // If this methods succeeds, it does not return until server is shut down.
 // Returned error will never be nil.
 func (s *ChatApiServer) Start() error {
-	if s.ChannelsHandler == nil {
-		return fmt.Errorf("channels HTTP handler is not defined - cannot start")
+	if s.ListVmsHandler == nil {
+		return fmt.Errorf("HTTP ListVmsHandler is not defined - cannot start")
+	}
+	if s.DiscConnectionHandler == nil {
+		return fmt.Errorf("HTTP DiscConnectionHandler is not defined - cannot start")
 	}
 	if s.Port == 0 {
 		return fmt.Errorf("port is not defined")
 	}
 
 	handler := new(http.ServeMux)
-	handler.HandleFunc("/channels", s.ChannelsHandler)
+	handler.HandleFunc("/vm_list", s.ListVmsHandler)
+	handler.HandleFunc("/connect_disc", s.DiscConnectionHandler)
 
 	s.server = &http.Server{
 		Addr:    fmt.Sprintf(":%d", s.Port),
