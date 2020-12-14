@@ -10,10 +10,11 @@ import (
 )
 
 // Channels HTTP handler.
-type HttpHandlerFunc http.HandlerFunc
+type HttpVmListHandlerFunc http.HandlerFunc
+type HttpConnectDiskHandlerFunc http.HandlerFunc
 
 // HttpHandler creates a new instance of channels HTTP handler.
-func HttpVmListHandler(store *VMStorage) HttpHandlerFunc {
+func HttpVmListHandler(store *VMStorage) HttpVmListHandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			fmt.Println("VM list request recieved.")
@@ -30,7 +31,7 @@ func HttpVmListHandler(store *VMStorage) HttpHandlerFunc {
 	}
 }
 
-func HttpConnectDiskHandler(store *VMStorage) HttpHandlerFunc {
+func HttpConnectDiskHandler(store *VMStorage) HttpConnectDiskHandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
 			fmt.Println("Disk connecting request recieved.")
