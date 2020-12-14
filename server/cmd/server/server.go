@@ -14,8 +14,8 @@ type HttpPortNumber int
 type ChatApiServer struct {
 	Port HttpPortNumber
 
-	ListVmsHandler        channels.HttpHandlerFunc
-	DiscConnectionHandler channels.HttpHandlerFunc
+	ListVmsHandler        channels.HttpVmListHandlerFunc
+	DiscConnectionHandler channels.HttpConnectDiskHandlerFunc
 
 	server *http.Server
 }
