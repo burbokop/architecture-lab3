@@ -43,6 +43,7 @@ func (s *VMStorage) LoadTotalDiscSpace(discs []int64) int64 {
 	for i, elem := range discs {
 		rows, err := s.Db.Query("SELECT id, name, disk_space FROM discs WHERE id='" + strconv.FormatInt(elem, 10) + "'")
 		if err == nil {
+			defer rows.Close()
 			var discSpace int64
 			if err := rows.Scan(nil, nil, discSpace); err != nil {
 				fmt.Println("Warning: error while scaning sql responce: ", err)
@@ -80,10 +81,22 @@ func (s *VMStorage) ListVirtualMachines() ([]*VirtualMachine, error) {
 	return res, nil
 }
 
-func (s *Store) CreateChannel(name string) error {
-	if len(name) < 0 {
-		return fmt.Errorf("channel name is not provided")
+func (s *VMStorage) ConnectDisk(diskId int64, vmId int64) error {
+	rows, err := s.Db.Query("SELECT connected_discs FROM virtual_machines WHERE id='$1'", vmId)
+	if err != nil {
+		return err
 	}
-	_, err := s.Db.Exec("INSERT INTO channels (name) VALUES ($1)", name)
+	var cd string
+	err = rows.Scan(&cd)
+	if err != nil {
+		return err
+	}
+	if cd != "" {
+		cd += ", "
+	}
+	cd += strconv.FormatInt(diskId, 10)
+
+	_, err = s.Db.Exec("UPDATE virtual_machines SET connected_discs = $1 WHERE id='$2'", cd, strconv.FormatInt(vmId, 10))
+
 	return err
 }
