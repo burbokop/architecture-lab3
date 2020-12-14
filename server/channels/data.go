@@ -33,7 +33,7 @@ func ParseDiscListString(str string) []int64 {
 
 	for _, element := range lst {
 		var num, err = strconv.ParseInt(element, 10, 64)
-		if err != nil && num >= 0 {
+		if err == nil && num >= 0 {
 			result = append(result, num)
 		} else {
 			fmt.Println("Warning: disk id is invalid (id won't be used):", element)
