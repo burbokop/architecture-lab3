@@ -14,8 +14,8 @@ CREATE TABLE "discs" (
 );
 
 INSERT INTO discs (id, name, disk_space) VALUES (0, 'Intel', 4294967296);
-INSERT INTO discs (id, name, disk_space) VALUES (1, 'Toshiba', 17179869184);
-INSERT INTO discs (id, name, disk_space) VALUES (3, 'Toshiba2', 17179869184);
+INSERT INTO discs (id, name, disk_space) VALUES (1, 'Toshiba', 8589934592);
+INSERT INTO discs (id, name, disk_space) VALUES (2, 'Toshiba2', 17179869184);
 
 INSERT INTO "virtual_machines" (id, name, cpu_count, connected_discs) VALUES (0, 'vm0', 4, '0, 1');
-INSERT INTO "virtual_machines" (id, name, cpu_count, connected_discs) VALUES (1, 'vm1', 8, '3');
+INSERT INTO "virtual_machines" (id, name, cpu_count, connected_discs) VALUES (1, 'vm1', 8, '2');

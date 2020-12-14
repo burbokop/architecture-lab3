@@ -121,8 +121,6 @@ func (e *VMNotFoundError) Error() string {
 }
 
 func (s *VMStorage) ConnectDisk(arg *ConnectionRequest) error {
-	fmt.Println(arg)
-
 	rows, err := s.Db.Query("SELECT connected_discs FROM virtual_machines WHERE id=$1", arg.VmId)
 	if err != nil {
 		return err
@@ -149,8 +147,7 @@ func (s *VMStorage) ConnectDisk(arg *ConnectionRequest) error {
 			new_data += ", "
 		}
 	}
-
-	var request = "UPDATE virtual_machines SET connected_discs = '" + cd + "' WHERE id=" + strconv.FormatInt(arg.VmId, 10)
+	var request = "UPDATE virtual_machines SET connected_discs = '" + new_data + "' WHERE id=" + strconv.FormatInt(arg.VmId, 10)
 	_, err = s.Db.Exec(request)
 
 	return err
