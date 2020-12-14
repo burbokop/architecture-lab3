@@ -32,11 +32,11 @@ func ParseDiscListString(str string) []int64 {
 	var lst = strings.Split(str, ",")
 
 	for _, element := range lst {
-		var num, err = strconv.ParseInt(element, 10, 64)
+		var num, err = strconv.ParseInt(strings.Trim(element, " "), 10, 64)
 		if err == nil && num >= 0 {
 			result = append(result, num)
 		} else {
-			fmt.Println("Warning: disk id is invalid (id won't be used):", element)
+			fmt.Println("Warning: disk id is invalid (id won't be used):", element, err)
 		}
 	}
 
@@ -46,14 +46,17 @@ func ParseDiscListString(str string) []int64 {
 func (s *VMStorage) LoadTotalDiscSpace(discs []int64) int64 {
 	var result int64
 	for i, elem := range discs {
-		rows, err := s.Db.Query("SELECT id, name, disk_space FROM discs WHERE id='" + strconv.FormatInt(elem, 10) + "'")
+		var request = "SELECT disk_space FROM discs WHERE id=" + strconv.FormatInt(elem, 10) + ";"
+		rows, err := s.Db.Query(request)
 		if err == nil {
 			defer rows.Close()
 			var discSpace int64
-			if err := rows.Scan(nil, nil, discSpace); err != nil {
-				fmt.Println("Warning: error while scaning sql responce: ", err)
+			if rows.Next() {
+				if err := rows.Scan(&discSpace); err != nil {
+					fmt.Println("Warning: error while scaning sql responce: ", err, "( id: ", elem, ")")
+				}
+				result += discSpace
 			}
-			result += discSpace
 		} else {
 			fmt.Println("Warning: error while loading disc info (i:", i, ", id:", elem, ", err:", err)
 		}
@@ -101,7 +104,9 @@ func (s *VMStorage) ConnectDisk(arg *ConnectionRequest) error {
 	}
 	cd += strconv.FormatInt(arg.diskId, 10)
 
-	_, err = s.Db.Exec("UPDATE virtual_machines SET connected_discs = $1 WHERE id='$2'", cd, strconv.FormatInt(arg.vmId, 10))
+	var request = "UPDATE virtual_machines SET connected_discs = '" + cd + "' WHERE id=" + strconv.FormatInt(arg.vmId, 10)
+	fmt.Println("r:", request)
+	_, err = s.Db.Exec(request)
 
 	return err
 }
