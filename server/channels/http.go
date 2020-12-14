@@ -17,7 +17,15 @@ func HttpVmListHandler(store *Store) HttpHandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			fmt.Println("vmlist responce:", r)
-			handleListChannels(store, rw)
+
+			res, err := store.ListChannels()
+			if err != nil {
+				log.Printf("Error making query to the db: %s", err)
+				tools.WriteJsonInternalError(rw)
+				return
+			}
+			tools.WriteJsonOk(rw, res)
+
 		} else {
 			rw.WriteHeader(http.StatusMethodNotAllowed)
 		}
@@ -49,14 +57,4 @@ func handleChannelCreate(r *http.Request, rw http.ResponseWriter, store *Store) 
 		log.Printf("Error inserting record: %s", err)
 		tools.WriteJsonInternalError(rw)
 	}
-}
-
-func handleListChannels(store *Store, rw http.ResponseWriter) {
-	res, err := store.ListChannels()
-	if err != nil {
-		log.Printf("Error making query to the db: %s", err)
-		tools.WriteJsonInternalError(rw)
-		return
-	}
-	tools.WriteJsonOk(rw, res)
 }
