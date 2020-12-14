@@ -16,15 +16,13 @@ client.listVirtualMashines()
     });
 
 // Scenario 2: Connect disc.
-client.connectDisc(0, 0)
+client.connectDisc(0, 1)
     .then((resp) => {
         console.log('=== Scenario 2 ===');
-        console.log('Disc connection responce:', resp);
-        //return client.listChannels()
-        //    .then((list) => list.map((c) => c.name).join(', '))
-        //    .then((str) => {
-        //        console.log(`vm list: ${str}`);
-        //    })
+        console.log('Disc connection responce:');
+        for(const r of resp) {
+            console.log(r);
+        }
     })
     .catch((e) => {
         console.log(`Problem creating a new channel: ${e.message}`);

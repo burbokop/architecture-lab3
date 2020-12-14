@@ -2,6 +2,7 @@ package channels
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -15,6 +16,7 @@ type HttpHandlerFunc http.HandlerFunc
 func HttpVmListHandler(store *VMStorage) HttpHandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
+			fmt.Println("VM list request recieved.")
 			res, err := store.ListVirtualMachines()
 			if err != nil {
 				log.Printf("Error making query to the db: %s", err)
@@ -31,6 +33,7 @@ func HttpVmListHandler(store *VMStorage) HttpHandlerFunc {
 func HttpConnectDiskHandler(store *VMStorage) HttpHandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
+			fmt.Println("Disk connecting request recieved.")
 			var c ConnectionRequest
 			if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
 				log.Printf("Error decoding request input: %s", err)

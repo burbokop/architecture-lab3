@@ -23,8 +23,8 @@ func NewStore(db *sql.DB) *VMStorage {
 }
 
 type ConnectionRequest struct {
-	diskId int64 `json:"diskId"`
-	vmId   int64 `json:"vmId"`
+	DiskId int64 `json:"diskId"`
+	VmId   int64 `json:"vmId"`
 }
 
 func ParseDiscListString(str string) []int64 {
@@ -41,6 +41,31 @@ func ParseDiscListString(str string) []int64 {
 	}
 
 	return result
+}
+
+func removeDuplicateValues(intSlice []int64) []int64 {
+	keys := make(map[int64]bool)
+	list := []int64{}
+
+	// If the key(values of the slice) is not equal
+	// to the already present value in new slice (list)
+	// then we append it. else we jump on another element.
+	for _, entry := range intSlice {
+		if _, value := keys[entry]; !value {
+			keys[entry] = true
+			list = append(list, entry)
+		}
+	}
+	return list
+}
+
+func ContainsInSlice(s []int64, elem int64) bool {
+	for _, v := range s {
+		if v == elem {
+			return true
+		}
+	}
+	return false
 }
 
 func (s *VMStorage) LoadTotalDiscSpace(discs []int64) int64 {
@@ -89,23 +114,43 @@ func (s *VMStorage) ListVirtualMachines() ([]*VirtualMachine, error) {
 	return res, nil
 }
 
+type VMNotFoundError struct{}
+
+func (e *VMNotFoundError) Error() string {
+	return "VM not found"
+}
+
 func (s *VMStorage) ConnectDisk(arg *ConnectionRequest) error {
-	rows, err := s.Db.Query("SELECT connected_discs FROM virtual_machines WHERE id='$1'", arg.vmId)
+	fmt.Println(arg)
+
+	rows, err := s.Db.Query("SELECT connected_discs FROM virtual_machines WHERE id=$1", arg.VmId)
 	if err != nil {
 		return err
 	}
 	var cd string
-	err = rows.Scan(&cd)
-	if err != nil {
-		return err
+	if rows.Next() {
+		err = rows.Scan(&cd)
+		if err != nil {
+			return err
+		}
+	} else {
+		return &VMNotFoundError{}
 	}
-	if cd != "" {
-		cd += ", "
+	var parsed_cd = removeDuplicateValues(ParseDiscListString(cd))
+	if ContainsInSlice(parsed_cd, arg.DiskId) {
+		return nil
 	}
-	cd += strconv.FormatInt(arg.diskId, 10)
 
-	var request = "UPDATE virtual_machines SET connected_discs = '" + cd + "' WHERE id=" + strconv.FormatInt(arg.vmId, 10)
-	fmt.Println("r:", request)
+	parsed_cd = append(parsed_cd, arg.DiskId)
+	var new_data string
+	for i, elem := range parsed_cd {
+		new_data += strconv.FormatInt(elem, 10)
+		if i < len(parsed_cd)-1 {
+			new_data += ", "
+		}
+	}
+
+	var request = "UPDATE virtual_machines SET connected_discs = '" + cd + "' WHERE id=" + strconv.FormatInt(arg.VmId, 10)
 	_, err = s.Db.Exec(request)
 
 	return err
