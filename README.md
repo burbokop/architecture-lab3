@@ -1,16 +1,15 @@
-Приклад організації коду для 2-гої лабораторної роботи.
+# LAB3
 
-- Сервер запускається командою
+## HOW TO RUN DB AND SERVER
 ```shell script
+cd ./server
+psql -f ../db/script.sql
 go run ./cmd/server
 ```
-з директорії `server`.
 
-- Приклади реалізації сценаріїв на базі клієнтського SDK запускаються через команду
+## HOW TO RUN CLIENT
 ```shell script
+cd ./client
 npm install
 node examples.js
 ```
-з директорії `client`.
-
-- Папка `db` містить SQL скрипти для ініціалізації БД сервера.
