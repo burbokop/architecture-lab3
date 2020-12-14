@@ -13,12 +13,21 @@ import (
 type HttpHandlerFunc http.HandlerFunc
 
 // HttpHandler creates a new instance of channels HTTP handler.
-func HttpHandler(store *Store) HttpHandlerFunc {
+func HttpVmListHandler(store *Store) HttpHandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
-		fmt.Println("responce:", r)
 		if r.Method == "GET" {
+			fmt.Println("vmlist responce:", r)
 			handleListChannels(store, rw)
-		} else if r.Method == "POST" {
+		} else {
+			rw.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	}
+}
+
+func HttpConnectDiskHandler(store *Store) HttpHandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		if r.Method == "POST" {
+			fmt.Println("connect disk responce:", r)
 			handleChannelCreate(r, rw, store)
 		} else {
 			rw.WriteHeader(http.StatusMethodNotAllowed)
