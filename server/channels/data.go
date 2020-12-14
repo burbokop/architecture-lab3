@@ -22,6 +22,11 @@ func NewStore(db *sql.DB) *VMStorage {
 	return &VMStorage{Db: db}
 }
 
+type ConnectionRequest struct {
+	diskId int64 `json:"diskId"`
+	vmId   int64 `json:"vmId"`
+}
+
 func ParseDiscListString(str string) []int64 {
 	var result []int64
 	var lst = strings.Split(str, ",")
@@ -81,8 +86,8 @@ func (s *VMStorage) ListVirtualMachines() ([]*VirtualMachine, error) {
 	return res, nil
 }
 
-func (s *VMStorage) ConnectDisk(diskId int64, vmId int64) error {
-	rows, err := s.Db.Query("SELECT connected_discs FROM virtual_machines WHERE id='$1'", vmId)
+func (s *VMStorage) ConnectDisk(arg *ConnectionRequest) error {
+	rows, err := s.Db.Query("SELECT connected_discs FROM virtual_machines WHERE id='$1'", arg.vmId)
 	if err != nil {
 		return err
 	}
@@ -94,9 +99,9 @@ func (s *VMStorage) ConnectDisk(diskId int64, vmId int64) error {
 	if cd != "" {
 		cd += ", "
 	}
-	cd += strconv.FormatInt(diskId, 10)
+	cd += strconv.FormatInt(arg.diskId, 10)
 
-	_, err = s.Db.Exec("UPDATE virtual_machines SET connected_discs = $1 WHERE id='$2'", cd, strconv.FormatInt(vmId, 10))
+	_, err = s.Db.Exec("UPDATE virtual_machines SET connected_discs = $1 WHERE id='$2'", cd, strconv.FormatInt(arg.vmId, 10))
 
 	return err
 }
